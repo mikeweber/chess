@@ -1,6 +1,7 @@
 require 'glimmer-dsl-libui'
 require_relative './chess_board'
 require_relative './pos'
+require_relative './queen'
 
 class ChessGUI
   include Glimmer
@@ -10,6 +11,11 @@ class ChessGUI
     @height = height
     @square_size = [width, height].min / 8
     @chess_board = ChessBoard.new
+    chess_board.add_piece(Queen.new(board: chess_board, team: :white), Pos.new(19))
+    chess_board.add_piece(Queen.new(board: chess_board, team: :black), Pos.new(21))
+    chess_board.add_piece(Queen.new(board: chess_board, team: :white), Pos.new(14))
+    chess_board.add_piece(Queen.new(board: chess_board, team: :white), Pos.new(12))
+    chess_board.add_piece(Queen.new(board: chess_board, team: :white), Pos.new(60))
   end
 
   def launch
@@ -31,14 +37,19 @@ class ChessGUI
             8.times do |col|
               pos = Pos.from_row_col(row, col)
               area {
-                p "rendering area #{pos.index}"
                 square(0, 0, square_size) {
                   fill <= [chess_board.square_at(pos), :current_color]
+                }
+                text(square_size / 2 - 20, square_size / 2 - 27) {
+                  string {
+                    font family: 'Arial', size: OS.mac? ? 50 : 40
+                    color <= [chess_board.piece_at(pos), :color]
+                    string <= [chess_board.piece_at(pos), :name]
+                  }
                 }
 
                 on_mouse_up do
                   chess_board.toggle_active(pos)
-                  p chess_board.active_at?(pos)
                 end
               }
             end

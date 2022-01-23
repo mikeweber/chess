@@ -14,4 +14,8 @@ class Pos
   def ==(other)
     index == other.index
   end
+
+  def to_s
+    "#{row}x#{col}"
+  end
 end
