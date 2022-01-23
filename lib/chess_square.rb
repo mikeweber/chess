@@ -1,16 +1,23 @@
 class ChessSquare
-  BLACK = { r: 0, g: 0, b: 0 }
-  WHITE = { r: 255, g: 255, b: 255 }
+  BLACK = { r: 40, g: 40, b: 40 }
+  WHITE = { r: 215, g: 215, b: 215 }
   GREEN = { r: 127, g: 200, b: 127 }
   RED   = { r: 200, g: 127, b: 127 }
-  attr_reader :pos, :active, :current_color, :original_color, :active_color
+  attr_reader :active, :current_color, :original_color, :active_color, :piece, :piece_name, :piece_color
 
-  def initialize(pos, color, active_color = RED)
-    @pos = pos
+  def initialize(color, empty_piece, active_color = RED)
     @original_color = color
     @current_color = color
     @active_color = active_color
+    @piece = empty_piece
+    @empty_piece = empty_piece
     @active = false
+  end
+
+  def piece=(new_piece)
+    @piece = new_piece || @empty_piece
+    @piece_color = piece.color
+    @piece_name = piece.name
   end
 
   def deactivate

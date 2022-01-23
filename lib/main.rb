@@ -20,13 +20,25 @@ class ChessGUI
 
   def launch
     @main_window = create_gui
+    register_observers
     main_window.show
+  end
+
+  def register_observers
+    @gui_squares.each.with_index do |gui_square, i|
+      chess_square = chess_board.square_at(Pos.new(i))
+      observe(chess_square, :piece) do |piece|
+        gui_square.string = piece.name
+        gui_square.color = piece.color
+      end
+    end
   end
 
   def create_gui
     main_window = window("Chess", width, height) {
       resizable false
 
+      @gui_squares = []
       vertical_box {
         padded false
 
@@ -36,20 +48,21 @@ class ChessGUI
 
             8.times do |col|
               pos = Pos.from_row_col(row, col)
+              chess_square = chess_board.square_at(pos)
               area {
                 square(0, 0, square_size) {
-                  fill <= [chess_board.square_at(pos), :current_color]
+                  fill <= [chess_square, :current_color]
                 }
                 text(square_size / 2 - 20, square_size / 2 - 27) {
-                  string {
+                  @gui_squares << string {
                     font family: 'Arial', size: OS.mac? ? 50 : 40
-                    color <= [chess_board.piece_at(pos), :color]
-                    string <= [chess_board.piece_at(pos), :name]
+                    color <= [chess_square, :piece_color]
+                    string <= [chess_square, :piece_name]
                   }
                 }
 
                 on_mouse_up do
-                  chess_board.toggle_active(pos)
+                  chess_board.select_square_at(pos)
                 end
               }
             end
