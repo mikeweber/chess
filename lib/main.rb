@@ -1,7 +1,6 @@
 require 'glimmer-dsl-libui'
 require_relative './chess_board'
 require_relative './pos'
-require_relative './queen'
 
 class ChessGUI
   include Glimmer
@@ -10,12 +9,7 @@ class ChessGUI
     @width = width
     @height = height
     @square_size = [width, height].min / 8
-    @chess_board = ChessBoard.new
-    chess_board.add_piece(Queen.new(board: chess_board, team: :white), Pos.new(19))
-    chess_board.add_piece(Queen.new(board: chess_board, team: :black), Pos.new(21))
-    chess_board.add_piece(Queen.new(board: chess_board, team: :white), Pos.new(14))
-    chess_board.add_piece(Queen.new(board: chess_board, team: :white), Pos.new(12))
-    chess_board.add_piece(Queen.new(board: chess_board, team: :white), Pos.new(60))
+    @chess_board = ChessBoard.setup
   end
 
   def launch

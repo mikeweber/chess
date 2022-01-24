@@ -1,8 +1,37 @@
 require_relative './chess_square'
-require_relative './empty_piece'
+require_relative './pieces'
 
 class ChessBoard
   attr_reader :active_position, :team_turn
+
+  def self.setup
+    board = new
+    [[:white, -1, 1], [:black, 64, -1]].each do |team, start, inc|
+      index = start
+      board.add_piece(Rook.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Queen.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Bishop.new(board: board, team: team), Pos.new(index += inc))
+      if team == :black
+        board.add_piece(Queen.new(board: board, team: team), Pos.new(index += inc))
+        board.add_piece(King.new(board: board, team: team), Pos.new(index += inc))
+      else
+        board.add_piece(King.new(board: board, team: team), Pos.new(index += inc))
+        board.add_piece(Queen.new(board: board, team: team), Pos.new(index += inc))
+      end
+      board.add_piece(Bishop.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Queen.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Rook.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
+    end
+    board
+  end
 
   def initialize
     @team_turn = :white
@@ -36,6 +65,7 @@ class ChessBoard
 
   def move_piece(from_pos, to_pos)
     piece = piece_at(from_pos)
+    piece.move!
     add_piece(piece, to_pos)
     remove_piece(from_pos)
     toggle_turn
