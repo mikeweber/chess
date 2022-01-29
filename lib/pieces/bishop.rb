@@ -6,6 +6,6 @@ class Bishop < Piece
   end
 
   def legal_moves_from(pos)
-    disagonal_moves_from(pos)
+    diagonal_moves_from(pos)
   end
 end

@@ -1,5 +1,5 @@
 class Piece
-  attr_reader :board, :team, :name
+  attr_reader :board, :team, :name, :passable
 
   def initialize(board:, team: nil)
     raise "Team can only be :black or :white" unless team.nil? || %i[black white].include?(team)
@@ -18,7 +18,7 @@ class Piece
   end
 
   def opponent?(other)
-    !other.team.nil? && team != other.team
+    team != other.team
   end
 
   def empty?
@@ -29,8 +29,11 @@ class Piece
     @moved
   end
 
-  def move!
+  def move!(_dist)
     @moved = true
+  end
+
+  def reset
   end
 
   protected
@@ -51,13 +54,13 @@ class Piece
     moves
   end
 
-  def map_moves(positions)
+  def map_moves(positions, skip_captures: false, only_captures: false, calculate_all_positions: false)
     moves = []
     positions.each do |pos|
       piece = board.piece_at(pos)
-      is_opponent = opponent?(piece)
-      moves << Move.new(pos, is_opponent) if piece.empty? || is_opponent
-      break unless piece.empty?
+      is_opponent = piece.opponent?(self)
+      moves << Move.new(pos, is_opponent) if piece.empty? && !only_captures || is_opponent && !skip_captures
+      break unless piece.empty? || calculate_all_positions
     end
     moves
   end

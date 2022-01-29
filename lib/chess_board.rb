@@ -9,7 +9,7 @@ class ChessBoard
     [[:white, -1, 1], [:black, 64, -1]].each do |team, start, inc|
       index = start
       board.add_piece(Rook.new(board: board, team: team), Pos.new(index += inc))
-      board.add_piece(Queen.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Knight.new(board: board, team: team), Pos.new(index += inc))
       board.add_piece(Bishop.new(board: board, team: team), Pos.new(index += inc))
       if team == :black
         board.add_piece(Queen.new(board: board, team: team), Pos.new(index += inc))
@@ -19,7 +19,7 @@ class ChessBoard
         board.add_piece(Queen.new(board: board, team: team), Pos.new(index += inc))
       end
       board.add_piece(Bishop.new(board: board, team: team), Pos.new(index += inc))
-      board.add_piece(Queen.new(board: board, team: team), Pos.new(index += inc))
+      board.add_piece(Knight.new(board: board, team: team), Pos.new(index += inc))
       board.add_piece(Rook.new(board: board, team: team), Pos.new(index += inc))
       board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
       board.add_piece(Pawn.new(board: board, team: team), Pos.new(index += inc))
@@ -65,10 +65,15 @@ class ChessBoard
 
   def move_piece(from_pos, to_pos)
     piece = piece_at(from_pos)
-    piece.move!
+    piece.move!((to_pos.row - from_pos.row).abs)
     add_piece(piece, to_pos)
     remove_piece(from_pos)
-    toggle_turn
+    if to_pos.row > 0 && to_pos.row < 7
+      [Pos.from_row_col(to_pos.row + 1, to_pos.col), Pos.from_row_col(to_pos.row - 1, to_pos.col)].each do |passable_pos|
+        remove_piece(passable_pos) if piece_at(passable_pos).passable
+      end
+    end
+    end_turn
   end
 
   def add_piece(piece, pos)
@@ -129,12 +134,21 @@ class ChessBoard
     squares[pos.index]
   end
 
-  def toggle_turn
-    @team_turn = team_turn == :white ? :black : :white
+  def end_turn
+    toggle_teams
+    reset_pieces
   end
 
   private
 
   attr_accessor :squares
   attr_writer :active_square, :active_position
+
+  def toggle_teams
+    @team_turn = team_turn == :white ? :black : :white
+  end
+
+  def reset_pieces
+    squares.each { |s| s.piece.reset if s.piece.team == team_turn }
+  end
 end
